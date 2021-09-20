@@ -1,5 +1,86 @@
 {% extends "base.html" %}
 
 {% block content %}
+  <h2>List of products</h2>
+
+  <form method="GET">
+    <div class="row">
+      <div class="col">
+        <div class="input-group mb-3">
+
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+          </div>
+          <input type="text" class="form-control" placeholder="Search..." name="query">
+      </div>
+      </div>
+
+      <div class="col">
+        <div class="input-group">
+          <select class="custom-select" name="is_active" onchange="this.form.submit()">
+            <option value="1" {% if request.GET.is_active == "1" %} selected {% endif %}>Active</option>
+            <option value="0" {% if request.GET.is_active == "0" %} selected {% endif %}>Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </form>
+  <a href="{% url 'products:index' %}">Show All</a>
+
+  {% if object_list %}
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Sku</th>
+          <th scope="col">Description</th>
+          <th scope="col">Status</th>
+          <th scope="col">Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in object_list %}
+        <tr>
+          <th scope="row">{{ product.pk }}</th>
+          <td>{{ product.name }}</td>
+          <td>{{ product.sku }}</td>
+          <td>{{ product.description }}</td>
+          <td>{{ product.is_active }}</td>
+          <td><a href="{% url 'products:update' product.pk %}"><i class="bi bi-pencil"></i></a></td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+
+  {% else %}
+    There are no products, <a href="{% url 'products:add' %}">Add</a> or <a href="{% url 'home' %}">Import</a>
+  {% endif %}
+  <nav>
+    {% if is_paginated %}
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% endif %}
+
+        {% for i in paginator.page_range %}
+          <li {% if page_obj.number == i %} class="page-item" {% endif %}>
+            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+          </li>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        {% endif %}
+      </ul>
+    {% endif %}
+  </nav>
+
+  {% if object_list %}
+    <a class="btn btn-danger" href="{% url 'products:delete' %}">Delete All records</a>
+  {% endif %}
+    <a class="btn btn-primary float-right" href="{% url 'products:add' %}">Add product</a>
 
 {% endblock %}

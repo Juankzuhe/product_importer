@@ -1,1 +1,44 @@
 {% extends "base.html" %}
+
+{% load crispy_forms_tags static %}
+
+{% block content %}
+<h2>Import Products</h2>
+  <form id="import" action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form | crispy }}
+    <div class="control-group">
+      <div class="controls">
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </div>
+    </div>
+  </form>
+
+  <hr>
+
+  <div class='progress-wrapper'>
+    <div id='progress-bar' class='progress-bar' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+  </div>
+  <div id="progress-bar-message"></div>
+  <div id="celery-result"></div>
+
+{% endblock %}
+
+{% block inline_javascript %}
+  <script src="{% static 'celery_progress/celery_progress.js' %}"></script>
+  {% if task_id %}
+  <script>
+
+      var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+
+      function customResult(resultElement) {
+        $("#import").remove();
+        $( resultElement ).append("<div>Products imported, see result in <a href=\"/products/\">products</a> </div>");
+      }
+
+      CeleryProgressBar.initProgressBar(progressUrl, {
+            onResult: customResult,
+      })
+  </script>
+  {% endif %}
+{% endblock %}
