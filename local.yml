@@ -56,17 +56,6 @@ services:
     ports: []
     command: /start-celeryworker
 
-  celerybeat:
-    <<: *django
-    image: product_importer_local_celerybeat
-    container_name: pi_celerybeat
-    depends_on:
-      - redis
-      - postgres
-      - mailhog
-    ports: []
-    command: /start-celerybeat
-
   flower:
     <<: *django
     image: product_importer_local_flower

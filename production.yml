@@ -52,11 +52,6 @@ services:
     image: product_importer_production_celeryworker
     command: /start-celeryworker
 
-  celerybeat:
-    <<: *django
-    image: product_importer_production_celerybeat
-    command: /start-celerybeat
-
   flower:
     <<: *django
     image: product_importer_production_flower
