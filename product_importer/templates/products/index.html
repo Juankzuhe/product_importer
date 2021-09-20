@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load filter_tags %}
+
 {% block content %}
   <h2>List of products</h2>
 
@@ -9,15 +11,16 @@
         <div class="input-group mb-3">
 
           <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+            <span class="input-group-text" id="basic-addon1"><i class="bi bi-search" aria-hidden="true"></i></span>
           </div>
-          <input type="text" class="form-control" placeholder="Search..." name="query">
+          <input type="text" class="form-control" placeholder="Search..." value="{{ request.GET.query }}" name="query">
       </div>
       </div>
 
       <div class="col">
         <div class="input-group">
           <select class="custom-select" name="is_active" onchange="this.form.submit()">
+            <option value="">Select..</option>
             <option value="1" {% if request.GET.is_active == "1" %} selected {% endif %}>Active</option>
             <option value="0" {% if request.GET.is_active == "0" %} selected {% endif %}>Inactive</option>
           </select>
@@ -30,6 +33,7 @@
   {% if object_list %}
 
     <table class="table">
+    <caption>Showing {{ object_list.count }} products</caption>
       <thead>
         <tr>
           <th scope="col">#</th>
@@ -48,7 +52,7 @@
           <td>{{ product.sku }}</td>
           <td>{{ product.description }}</td>
           <td>{{ product.is_active }}</td>
-          <td><a href="{% url 'products:update' product.pk %}"><i class="bi bi-pencil"></i></a></td>
+          <td><a href="{% url 'products:update' product.pk %}"><i class="bi bi-pencil" aria-hidden="true"></i></a></td>
         </tr>
         {% endfor %}
 
@@ -62,17 +66,17 @@
     {% if is_paginated %}
       <ul class="pagination justify-content-center">
         {% if page_obj.has_previous %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+          <li class="page-item"><a class="page-link" href="?{% param_replace page=page_obj.previous_page_number %}">Previous</a></li>
         {% endif %}
 
         {% for i in paginator.page_range %}
           <li {% if page_obj.number == i %} class="page-item" {% endif %}>
-            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            <a class="page-link" href="?{% param_replace page=i %}">{{ i }}</a>
           </li>
         {% endfor %}
 
         {% if page_obj.has_next %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+          <li class="page-item"><a class="page-link" href="??{% param_replace page=page_obj.next_page_number %}">Next</a></li>
         {% endif %}
       </ul>
     {% endif %}
