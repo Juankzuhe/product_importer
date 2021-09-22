@@ -40,29 +40,6 @@ Running type checks with mypy:
 
   $ mypy product_importer
 
-Test coverage
-^^^^^^^^^^^^^
-
-To run the tests, check your test coverage, and generate an HTML coverage report::
-
-    $ coverage run -m pytest
-    $ coverage html
-    $ open htmlcov/index.html
-
-Running tests with py.test
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-::
-
-  $ pytest
-
-Live reloading and Sass CSS compilation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Moved to `Live reloading and SASS compilation`_.
-
-.. _`Live reloading and SASS compilation`: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
-
 Celery
 ^^^^^^
 
@@ -100,3 +77,20 @@ Docker
 See detailed `cookiecutter-django Docker documentation`_.
 
 .. _`cookiecutter-django Docker documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
+
+AWS
+^^^^^^
+.. Create a new instance ec2 _--image-id ubuntu 20.04
+
+aws ec2 run-instances --image-id ami-00399ec92321828f5 --count 1 --instance-type t2.small --key-name product_importer --security-groups my-sg
+
+.. Copy Files to EC2 Instance
+
+cd /path/to/product_importer
+
+rsync -av -e "ssh -i /path/to/product_importer.pem" . ec2-user@ec2-WWW-XXX-YYY-ZZZ.REGION.compute.amazonaws.com:~/app/
+
+.. Connect to instance
+
+docker-compose -f production.yml build
+docker-compose -f production.yml up -d
