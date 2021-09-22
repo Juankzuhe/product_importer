@@ -1,4 +1,4 @@
-from django.forms.forms import Form, FileField
+from django.forms.forms import FileField, Form
 
 
 class CsvImportProductForm(Form):

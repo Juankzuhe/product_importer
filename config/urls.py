@@ -10,7 +10,7 @@ from product_importer.products.views import ImportProductView
 urlpatterns = [
     path("", ImportProductView.as_view(), name="home"),
     path(settings.ADMIN_URL, admin.site.urls),
-    path("celery-progress/", include('celery_progress.urls')),
+    path("celery-progress/", include("celery_progress.urls")),
     path("products/", include("product_importer.products.urls", namespace="products")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:

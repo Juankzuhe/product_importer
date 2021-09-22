@@ -1,8 +1,9 @@
-from django.db.models import Model, CharField, IntegerField, BooleanField, DateTimeField
+from django.db.models import BooleanField, CharField, DateTimeField, Model
 
 
 class Product(Model):
-    """ Product Model """
+    """Product Model"""
+
     sku = CharField(max_length=500, unique=True)
     name = CharField(max_length=500)
     description = CharField(max_length=500)
@@ -14,4 +15,4 @@ class Product(Model):
         return self.name
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
