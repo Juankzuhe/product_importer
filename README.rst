@@ -23,11 +23,9 @@ Basic Commands
 Setting Up Your Users
 ^^^^^^^^^^^^^^^^^^^^^
 
-* To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a "Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link into your browser. Now the user's email should be verified and ready to go.
-
 * To create an **superuser account**, use this command::
 
-    $ python manage.py createsuperuser
+    $ docker-compose -f production.yml run --rm django python manage.py createsuperuser
 
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
 
@@ -84,13 +82,38 @@ AWS
 
 aws ec2 run-instances --image-id ami-00399ec92321828f5 --count 1 --instance-type t2.small --key-name product_importer --security-groups my-sg
 
+
+
+.. Connect to instance
+
+chmod 400 product_importer.pem
+
+ssh -i /path/to/product_importer.pem ec2-user@ec2-WWW-XXX-YYY-ZZZ.REGION.compute.amazonaws.com
+
+.. Install docker & docker-compose
+
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+sudo apt update
+apt-cache policy docker-ce
+sudo apt install docker-ce
+sudo systemctl status docker
+sudo usermod -aG docker ${USER}
+sudo apt install docker-compose
+
 .. Copy Files to EC2 Instance
 
 cd /path/to/product_importer
 
 rsync -av -e "ssh -i /path/to/product_importer.pem" . ec2-user@ec2-WWW-XXX-YYY-ZZZ.REGION.compute.amazonaws.com:~/app/
 
-.. Connect to instance
+.. Deploy changes
+
+ssh -i /path/to/product_importer.pem ec2-user@ec2-WWW-XXX-YYY-ZZZ.REGION.compute.amazonaws.com
+
+cd /app
 
 docker-compose -f production.yml build
+docker-compose -f production.yml run --rm django python manage.py migrate
 docker-compose -f production.yml up -d
