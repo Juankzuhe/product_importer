@@ -233,6 +233,6 @@ CELERY_TASK_SERIALIZER = "json"
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_serializer
 CELERY_RESULT_SERIALIZER = "json"
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-time-limit
-CELERY_TASK_TIME_LIMIT = 540
+CELERY_TASK_TIME_LIMIT = 1000
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-soft-time-limit
-CELERY_TASK_SOFT_TIME_LIMIT = 300
+CELERY_TASK_SOFT_TIME_LIMIT = 900

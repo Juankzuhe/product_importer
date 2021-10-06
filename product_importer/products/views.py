@@ -1,10 +1,9 @@
-import json
 import random
 
 import pandas
 from django.contrib import messages
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
@@ -29,16 +28,26 @@ class ImportProductView(View):
             messages.warning(request, "The wrong file type was uploaded")
             return HttpResponseRedirect(request.path_info)
 
-        dataframe = pandas.read_csv(csv_file)
-        dataframe["is_active"] = random.choices([True, False], k=len(dataframe))
-        dataset = json.loads(dataframe.to_json(orient="records"))
+        if request.is_ajax():
+            try:
+                dataframe = pandas.read_csv(csv_file)
+                dataframe.drop_duplicates(subset=["sku"], keep="last")
+                dataframe["is_active"] = random.choices([True, False], k=len(dataframe))
+                dataset = dataframe.to_json(orient="records")
+                print("step -- load")
+                import_products.delay(dataset)
+                print("step -- response")
+                returnmsg = {"status_code": 200}
+                print("imported successfully")
+            except Exception as e:
+                import traceback
 
-        result = import_products.delay(dataset)
-        return render(
-            request,
-            "pages/home.html",
-            context={"task_id": result.task_id, "form": form},
-        )
+                err = traceback.format_exc()
+                print(str(err))
+                print("Error While Importing Data: ", e)
+                returnmsg = {"status_code": 500}
+
+            return JsonResponse(returnmsg)
 
 
 class ProductListView(ListView):
